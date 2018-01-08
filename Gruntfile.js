@@ -11,7 +11,7 @@ module.exports = function (grunt) {
         },
         jshint: {
             options: {
-                predef: ["document", "console", "alert", "$"],
+                predef: ["document", "console", "alert"],
                 esnext: true,
                 globalstrict: true,
                 globals: {},
