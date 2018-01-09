@@ -4,7 +4,7 @@ const $ = require("jquery");
 
 module.exports.createTrip = function(){
     let tripName = $("#trip-name").val();
-    let tripDescription = $("trip-description").val();
+    let tripDescription = $("#trip-description").val();
     let categoryID = "";
     if ($('#itenerary-checkbox').is(':checked')){
         console.log("This is an itenerary");
@@ -21,5 +21,4 @@ module.exports.createTrip = function(){
     };
     console.log(tripObject);
     return tripObject;
-
 };

@@ -10260,7 +10260,7 @@ const $ = require("jquery");
 
 module.exports.createTrip = function(){
     let tripName = $("#trip-name").val();
-    let tripDescription = $("trip-description").val();
+    let tripDescription = $("#trip-description").val();
     let categoryID = "";
     if ($('#itenerary-checkbox').is(':checked')){
         console.log("This is an itenerary");
@@ -10277,7 +10277,6 @@ module.exports.createTrip = function(){
     };
     console.log(tripObject);
     return tripObject;
-
 };
 },{"jquery":1}],3:[function(require,module,exports){
 'use strict';
@@ -10363,19 +10362,73 @@ const factory = require("./factory");
 const view = require("./view");
 const tripBuilder = require("./createTrip");
 
-factory.getAllTrips()
-    .then((trips) => {
-        console.log(trips);
-        view.printTrips(trips);
-    })
-    .catch(err => {
-        console.log("oops", err);
-    });
+function updateTrips(){
+    factory.getAllTrips()
+        .then((trips) => {
+            let keys = Object.keys(trips);
+            keys.forEach(key => {
+                trips[key].id = key;
+                return trips;
+            });
+            console.log("these should have id assigned", trips);
+            view.printTrips(trips);
+        })
+        .catch(err => {
+            console.log("oops", err);
+        });
+}
+
 
 $("#save-button").click(function(){
     let tripObject = tripBuilder.createTrip();
-    factory.createNewTrip(tripObject);
+    factory.createNewTrip(tripObject)
+        .then((trips) => {
+            view.clearTrips();
+            updateTrips();
+        })
+        .catch(err => {
+            console.log("oops", err);
+        });
+    
 });
+
+$("body").on("click", ".edit", function(){
+    let tripId = $(this).attr("id");
+    let textarea = $(`<input type = "text" id = "edit-description-${tripId}" placeholder = "edit your description"><button class = "save-edits" id = "${tripId}">Save</button>`);
+    $(`#trip-description-${tripId}`).replaceWith(textarea);
+});
+
+$("body").on("click", ".save-edits", function(){
+    let tripId = $(this).attr("id");
+    let newDescription = $(`#edit-description-${tripId}`).val();
+    factory.updateTrip(tripId, newDescription)
+        .then((trips) => {
+            view.clearTrips();
+            updateTrips();
+        })
+        .catch(err => {
+            console.log("oops", err);
+        });
+});
+
+
+
+$("body").on("click", ".delete", function(){
+    let tripId = $(this).attr("id");
+    factory.deleteTrip(tripId)
+        .then((trips) => {
+            view.clearTrips();
+            updateTrips();
+        })
+        .catch(err => {
+            console.log("oops", err);
+        });
+
+});
+
+updateTrips();
+
+
 },{"./createTrip":2,"./factory":3,"./view":5,"jquery":1}],5:[function(require,module,exports){
 'use strict';
 
@@ -10383,8 +10436,12 @@ const $ = require("jquery");
 
 module.exports.printTrips = function(tripObject){
     for (let trip in tripObject){
-        $("#view-all-trips-container").append(`<h3 id = "trip-name">${tripObject[trip].name}</h3>`).append(`<p id = "trip-description">${tripObject[trip].description}</p>`);
+        $("#view-all-trips-container").append(`<h3 class = "trip-name">${tripObject[trip].name}</h3>`).append(`<p class = "trip-description" id = "trip-description-${tripObject[trip].id}">${tripObject[trip].description}</p><button class = "edit" id = "${tripObject[trip].id}">Edit</button><button class = "delete" id = "${tripObject[trip].id}">Delete</button>`);
     }
 
+};
+
+module.exports.clearTrips = function(){
+    $("#view-all-trips-container").text("");
 };
 },{"jquery":1}]},{},[4]);
