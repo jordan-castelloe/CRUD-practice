@@ -10255,6 +10255,32 @@ return jQuery;
 
 },{}],2:[function(require,module,exports){
 'use strict';
+
+const $ = require("jquery");
+
+module.exports.createTrip = function(){
+    let tripName = $("#trip-name").val();
+    let tripDescription = $("trip-description").val();
+    let categoryID = "";
+    if ($('#itenerary-checkbox').is(':checked')){
+        console.log("This is an itenerary");
+        categoryID = 1;
+    } else if ($('#collection-checkbox').is(':checked')) {
+        console.log("This is a collection");
+        categoryID = 2;
+    }
+    let tripObject = {
+        name: tripName,
+        description: tripDescription,
+        category: categoryID,
+        places : ["place id", "place id"]
+    };
+    console.log(tripObject);
+    return tripObject;
+
+};
+},{"jquery":1}],3:[function(require,module,exports){
+'use strict';
 const $ = require("jquery");
 //create
 module.exports.createNewTrip = function (tripObject) {
@@ -10329,12 +10355,13 @@ module.exports.deleteTrip = function(tripID){
 };
 
 
-},{"jquery":1}],3:[function(require,module,exports){
+},{"jquery":1}],4:[function(require,module,exports){
 'use strict';
 
 const $ = require("jquery");
 const factory = require("./factory");
 const view = require("./view");
+const tripBuilder = require("./createTrip");
 
 factory.getAllTrips()
     .then((trips) => {
@@ -10345,8 +10372,11 @@ factory.getAllTrips()
         console.log("oops", err);
     });
 
-
-},{"./factory":2,"./view":4,"jquery":1}],4:[function(require,module,exports){
+$("#save-button").click(function(){
+    let tripObject = tripBuilder.createTrip();
+    factory.createNewTrip(tripObject);
+});
+},{"./createTrip":2,"./factory":3,"./view":5,"jquery":1}],5:[function(require,module,exports){
 'use strict';
 
 const $ = require("jquery");
@@ -10357,4 +10387,4 @@ module.exports.printTrips = function(tripObject){
     }
 
 };
-},{"jquery":1}]},{},[3]);
+},{"jquery":1}]},{},[4]);
