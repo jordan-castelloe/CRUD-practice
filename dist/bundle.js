@@ -10255,32 +10255,106 @@ return jQuery;
 
 },{}],2:[function(require,module,exports){
 'use strict';
+const $ = require("jquery");
+//create
+module.exports.createNewTrip = function (tripObject) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: "https://fir-7e21a.firebaseio.com/trips.json",
+            method: "POST",
+            data: JSON.stringify(tripObject)
+        })
+            .done(tripObject => {
+                resolve(tripObject);
+            })
+            .fail(error => {
+                console.log("uh-oh", error.statusText);
+                reject(error);
+            });
+    });
 
-module.exports.load = function(){
-    console.log("create trip function loaded");
-};
-},{}],3:[function(require,module,exports){
-'use strict';
+ };
 
-module.exports.load = function () {
-    console.log("edit trip function loaded");
+// read
+module.exports.getAllTrips = function () {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: "https://fir-7e21a.firebaseio.com/trips.json"
+        })
+            .done(trips => {
+                resolve(trips);
+            })
+            .fail(error => {
+                console.log("uh-oh", error.statusText);
+                reject(error);
+            });
+    });
 };
-},{}],4:[function(require,module,exports){
+
+// update
+module.exports.updateTrip = function(tripID, description){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `https://fir-7e21a.firebaseio.com/trips/${tripID}.json`,
+            method: "PATCH",
+            data: JSON.stringify({ description })
+        })
+            .done(data => {
+                resolve(data);
+            })
+            .fail(error => {
+                console.log("uh-oh", error.statusText);
+                reject(error);
+            });
+    });
+
+};
+
+// delete
+
+module.exports.deleteTrip = function(tripID){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `https://fir-7e21a.firebaseio.com/trips/${tripID}.json`,
+            method: "DELETE"
+        })
+            .done(data => {
+                resolve(data);
+            })
+            .fail(error => {
+                console.log("uh-oh", error.statusText);
+                reject(error);
+            });
+    });
+};
+
+
+},{"jquery":1}],3:[function(require,module,exports){
 'use strict';
 
 const $ = require("jquery");
-const createTrip = require("./createTrip");
-const editTrip = require("./editTrip");
-const viewAllTrips = require("./viewAllTrips");
+const factory = require("./factory");
+const view = require("./view");
 
-createTrip.load();
-editTrip.load();
-viewAllTrips.load();
+factory.getAllTrips()
+    .then((trips) => {
+        console.log(trips);
+        view.printTrips(trips);
+    })
+    .catch(err => {
+        console.log("oops", err);
+    });
 
-},{"./createTrip":2,"./editTrip":3,"./viewAllTrips":5,"jquery":1}],5:[function(require,module,exports){
+
+},{"./factory":2,"./view":4,"jquery":1}],4:[function(require,module,exports){
 'use strict';
 
-module.exports.load = function () {
-    console.log("view all trips");
+const $ = require("jquery");
+
+module.exports.printTrips = function(tripObject){
+    for (let trip in tripObject){
+        $("#view-all-trips-container").append(`<h3 id = "trip-name">${tripObject[trip].name}</h3>`).append(`<p id = "trip-description">${tripObject[trip].description}</p>`);
+    }
+
 };
-},{}]},{},[4]);
+},{"jquery":1}]},{},[3]);

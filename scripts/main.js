@@ -1,10 +1,15 @@
 'use strict';
 
 const $ = require("jquery");
-const createTrip = require("./createTrip");
-const editTrip = require("./editTrip");
-const viewAllTrips = require("./viewAllTrips");
+const factory = require("./factory");
+const view = require("./view");
 
-createTrip.load();
-editTrip.load();
-viewAllTrips.load();
+factory.getAllTrips()
+    .then((trips) => {
+        console.log(trips);
+        view.printTrips(trips);
+    })
+    .catch(err => {
+        console.log("oops", err);
+    });
+
